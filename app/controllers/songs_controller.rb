@@ -1,5 +1,7 @@
 class SongsController < ApplicationController
 
+  before_action :authenticate_user!, :except => [ :show, :index ]
+
   def index
     @songs = Song.all
     respond_to do |format|
@@ -10,6 +12,8 @@ class SongsController < ApplicationController
 
   def show
     @song = Song.find(params[:id])
+    gon.songs = @songs
+
     
     respond_to do |format|
       format.html
@@ -27,6 +31,8 @@ class SongsController < ApplicationController
 
   def create
     @song = Song.new(song_params)
+
+    @song.user = current_user
 
     if @song.save
       redirect_to @song
@@ -57,3 +63,4 @@ class SongsController < ApplicationController
       params.require(:song).permit(:title)
     end
 end
+
